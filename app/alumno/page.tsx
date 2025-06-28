@@ -99,7 +99,7 @@ export default function AlumnoPage() {
   }
 
   return (
-    <main className="max-w-xl mx-auto min-h-screen bg-[#24396C] text-white px-4 py-2 flex flex-col gap-6">
+    <main className="max-w-xl mx-auto h-full bg-[#24396C] text-white px-4 py-2 flex flex-col gap-6">
       {/* Pestañas */}
       <div className="flex justify-around border-b border-[#CCDB42] mb-4">
         {["ofertas", "matches", "datos"].map((key) => (
