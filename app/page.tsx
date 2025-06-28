@@ -9,7 +9,7 @@ export default function Home() {
         Conecta a alumnos de desarrollo web con empresas que buscan talento joven. Inspírate, desliza y haz match.
       </p>
       <Link href="/admin">
-        <Button className="mt-6 bg-[#CCDB42] text-[#24396C] hover:bg-[#b6c622]">Panel de Administración</Button>
+        <Button className="mt-6 bg-[#CCDB42] text-[#24396C] hover:bg-[#b6c622]">Panel de Administraciónnn</Button>
       </Link>
     </main>
   );
