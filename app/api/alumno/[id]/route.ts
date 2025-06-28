@@ -9,7 +9,13 @@ const mockAlumnos = [
     curso: "2º",
     añoEscolar: "24-25",
     intereses: ["Frontend", "UI/UX", "DevOps"],
-    habilidades: ["JavaScript","React","NextJS", "Figma", "Docker"],
+    habilidades: [
+      { nombre: "JavaScript", nivel: "oro" },
+      { nombre: "React", nivel: "plata" },
+      { nombre: "NextJS", nivel: "plata" },
+      { nombre: "Figma", nivel: "bronce" },
+      { nombre: "Docker", nivel: "bronce" },
+    ],
     buscandoPracticas: true,
     cvUrl: "/cvs/lucia_perez.pdf",
   },
@@ -21,7 +27,10 @@ const mockAlumnos = [
     curso: "1º",
     añoEscolar: "24-25",
     intereses: ["Redes", "Seguridad"],
-    habilidades: ["Linux", "Docker"],
+    habilidades: [
+      { nombre: "Linux", nivel: "plata" },
+      { nombre: "Docker", nivel: "bronce" },
+    ],
     buscandoPracticas: false,
     cvUrl: null,
   },
@@ -44,4 +53,3 @@ export async function GET(
 
   return NextResponse.json(alumno);
 }
-    

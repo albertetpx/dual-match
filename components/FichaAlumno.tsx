@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from "react";
 
+type Habilidad = {
+  nombre: string;
+  nivel: "bronce" | "plata" | "oro";
+};
+
 type Alumno = {
   id: number;
   nombre: string;
@@ -10,7 +15,7 @@ type Alumno = {
   curso: string;
   añoEscolar: string;
   intereses: string[];
-  habilidades: string[];
+  habilidades: Habilidad[];
   buscandoPracticas: boolean;
   cvUrl: string | null;
 };
@@ -29,7 +34,7 @@ export default function FichaAlumno({ alumnoId }: { alumnoId: number }) {
   const [editCurso, setEditCurso] = useState("");
   const [editAñoEscolar, setEditAñoEscolar] = useState("");
   const [editIntereses, setEditIntereses] = useState<string>("");
-  const [editHabilidades, setEditHabilidades] = useState<string>("");
+  const [editHabilidades, setEditHabilidades] = useState<Habilidad[]>([]);
 
   useEffect(() => {
     async function fetchAlumno() {
@@ -48,7 +53,7 @@ export default function FichaAlumno({ alumnoId }: { alumnoId: number }) {
         setEditCurso(data.curso);
         setEditAñoEscolar(data.añoEscolar);
         setEditIntereses(data.intereses.join(", "));
-        setEditHabilidades(data.habilidades.join(", "));
+        setEditHabilidades(data.habilidades);
       } catch (e) {
         setError((e as Error).message);
       } finally {
@@ -58,9 +63,9 @@ export default function FichaAlumno({ alumnoId }: { alumnoId: number }) {
     fetchAlumno();
   }, [alumnoId]);
 
-  function toggleBuscando() {
-    if (!editMode) return; // solo se puede cambiar en modo edición
-    setBuscandoPracticas((prev) => !prev);
+  function toggleBuscando(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!editMode) return;
+    setBuscandoPracticas(e.target.checked);
   }
 
   async function guardarCambios() {
@@ -74,7 +79,7 @@ export default function FichaAlumno({ alumnoId }: { alumnoId: number }) {
       curso: editCurso,
       añoEscolar: editAñoEscolar,
       intereses: editIntereses.split(",").map((i) => i.trim()).filter(Boolean),
-      habilidades: editHabilidades.split(",").map((h) => h.trim()).filter(Boolean),
+      habilidades: editHabilidades,
       buscandoPracticas,
       cvUrl: alumno?.cvUrl || null,
     });
@@ -87,8 +92,8 @@ export default function FichaAlumno({ alumnoId }: { alumnoId: number }) {
 
   return (
     <div className="border border-[#CCDB42] rounded-lg p-6 bg-[#2F4A8A] shadow-lg max-w-md mx-auto">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-extrabold text-[#CCDB42]">
+      <div className="flex justify-between items-center mb-4 gap-4">
+        <h1 className="text-2xl font-extrabold text-[#CCDB42]">
           {editMode ? (
             <input
               type="text"
@@ -117,19 +122,6 @@ export default function FichaAlumno({ alumnoId }: { alumnoId: number }) {
         )}
       </div>
 
-      <div className="mb-4 space-y-2">
-        <LabelDatoEditable
-          etiqueta="Año nacimiento"
-          valor={editAñoNacimiento}
-          setValor={setEditAñoNacimiento}
-          editable={editMode}
-          tipo="number"
-        />
-        <LabelDatoEditable etiqueta="Ciclo" valor={editCiclo} setValor={setEditCiclo} editable={editMode} />
-        <LabelDatoEditable etiqueta="Curso" valor={editCurso} setValor={setEditCurso} editable={editMode} />
-        <LabelDatoEditable etiqueta="Año escolar" valor={editAñoEscolar} setValor={setEditAñoEscolar} editable={editMode} />
-      </div>
-
       <div className="mb-4">
         <EtiquetasListaEditable
           etiqueta="Intereses"
@@ -140,16 +132,29 @@ export default function FichaAlumno({ alumnoId }: { alumnoId: number }) {
       </div>
 
       <div className="mb-6">
-        <EtiquetasListaEditable
-          etiqueta="Habilidades"
-          valor={editHabilidades}
-          setValor={setEditHabilidades}
+        <HabilidadesListaEditable
+          habilidades={editHabilidades}
+          setHabilidades={setEditHabilidades}
           editable={editMode}
         />
       </div>
 
+      <div className="mb-4 space-y-2">
+        <LabelDatoEditable
+          etiqueta="Año nacimiento"
+          valor={editAñoNacimiento}
+          setValor={setEditAñoNacimiento}
+          editable={editMode}
+          tipo="number"
+          menosDestacado={true}
+        />
+        <LabelDatoEditable etiqueta="Ciclo" valor={editCiclo} setValor={setEditCiclo} editable={editMode} menosDestacado={true} />
+        <LabelDatoEditable etiqueta="Curso" valor={editCurso} setValor={setEditCurso} editable={editMode} menosDestacado={true} />
+        {/* <LabelDatoEditable etiqueta="Año escolar" valor={editAñoEscolar} setValor={setEditAñoEscolar} editable={editMode} menosDestacado={true} /> */}
+      </div>
+
       <div className="mb-6 flex items-center gap-3">
-        <span className="font-semibold text-[#CCDB42] text-lg select-none">
+        <span className="font-semibold text-[#CCDB42] text-l select-none">
           Buscando prácticas
         </span>
         <label
@@ -196,25 +201,44 @@ function LabelDatoEditable({
   setValor,
   editable,
   tipo = "text",
+  menosDestacado = false,
 }: {
   etiqueta: string;
   valor: string;
   setValor: (v: string) => void;
   editable: boolean;
   tipo?: string;
+  menosDestacado?: boolean;
 }) {
   return (
-    <p className="flex gap-2 text-white text-lg items-center">
-      <span className="font-semibold text-[#CCDB42] w-44">{etiqueta}:</span>
+    <p
+      className={`flex gap-2 items-center ${menosDestacado
+        ? "text-gray-400 text-sm font-normal"
+        : "text-white text-lg font-semibold"
+        }`}
+    >
+      <span
+        className={`w-44 ${menosDestacado
+          ? "text-gray-400 font-normal"
+          : "text-[#CCDB42] font-semibold"
+          }`}
+      >
+        {etiqueta}:
+      </span>
       {editable ? (
         <input
           type={tipo}
           value={valor}
           onChange={(e) => setValor(e.target.value)}
-          className="bg-[#1f3a6f] text-white rounded px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-[#CCDB42]"
+          className={`rounded px-2 py-1 w-full focus:outline-none focus:ring-2 ${menosDestacado
+            ? "bg-[#1f3a6f] text-gray-300 focus:ring-gray-400"
+            : "bg-[#1f3a6f] text-white focus:ring-[#CCDB42]"
+            } text-sm`}
         />
       ) : (
-        <span className="text-gray-200">{valor}</span>
+        <span className={menosDestacado ? "text-gray-400 text-sm" : "text-gray-200"}>
+          {valor}
+        </span>
       )}
     </p>
   );
@@ -254,6 +278,82 @@ function EtiquetasListaEditable({
         </ul>
       ) : (
         <p className="italic text-gray-400">No hay {etiqueta.toLowerCase()} registrados.</p>
+      )}
+    </div>
+  );
+}
+
+function HabilidadesListaEditable({
+  habilidades,
+  setHabilidades,
+  editable,
+}: {
+  habilidades: Habilidad[];
+  setHabilidades: (h: Habilidad[]) => void;
+  editable: boolean;
+}) {
+  function cambiarNivel(index: number, nuevoNivel: Habilidad["nivel"]) {
+    const nuevas = [...habilidades];
+    nuevas[index].nivel = nuevoNivel;
+    setHabilidades(nuevas);
+  }
+
+  function cambiarNombre(index: number, nuevoNombre: string) {
+    const nuevas = [...habilidades];
+    nuevas[index].nombre = nuevoNombre;
+    setHabilidades(nuevas);
+  }
+
+  function añadirHabilidad() {
+    setHabilidades([...habilidades, { nombre: "", nivel: "bronce" }]);
+  }
+
+  function eliminarHabilidad(index: number) {
+    setHabilidades(habilidades.filter((_, i) => i !== index));
+  }
+
+  return (
+    <div>
+      <p className="font-semibold text-[#CCDB42] text-lg mb-1">Habilidades:</p>
+      {habilidades.length === 0 && !editable && (
+        <p className="italic text-gray-400">No hay habilidades registradas.</p>
+      )}
+      {!editable && (
+        <ul className="list-disc list-outside text-gray-200 space-y-2 pl-5">
+          {habilidades.map((h, i) => (
+            <li key={i} className="w-40"> {/* ancho fijo para alinear */}
+              <div className="flex items-center justify-between w-full">
+                <span className="text-gray-200">{h.nombre}</span>
+                <div className="flex gap-1">
+                  {["bronce", "plata", "oro"].map((nivel) => {
+                    const isActive = h.nivel === nivel;
+                    const baseColor =
+                      nivel === "oro" ? "bg-yellow-400" :
+                        nivel === "plata" ? "bg-gray-300" :
+                          "bg-[#cd7f32]";
+                    return (
+                      <span
+                        key={nivel}
+                        className={`inline-block w-4 h-4 rounded-full border-2 border-white
+                    ${isActive ? baseColor : "bg-transparent opacity-40 border-gray-500"}`}
+                        title={nivel}
+                      ></span>
+                    );
+                  })}
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {editable && (
+        <button
+          onClick={añadirHabilidad}
+          className="mt-2 px-3 py-1 bg-[#CCDB42] text-[#24396C] rounded hover:bg-yellow-300 transition"
+        >
+          Añadir habilidad
+        </button>
       )}
     </div>
   );
