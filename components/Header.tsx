@@ -1,67 +1,42 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
+import Image from "next/image";
+import { LogOut } from "lucide-react";
 
 export default function Header() {
-  const [open, setOpen] = useState(false);
+  function handleLogout() {
+    alert("Cerrar sesión");
+    // Aquí la lógica real de logout
+  }
 
   return (
     <header className="bg-[#24396C] text-[#CCDB42] shadow-md">
-      <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-2 font-bold text-lg">
-          <span className="text-xl">🎓</span>
-          <span>MatchPrácticas</span>
+      <div className="flex items-center justify-between px-4 py-3 max-w-xl mx-auto relative">
+        {/* Logo PNG a la izquierda */}
+        <div className="flex items-center gap-2 font-bold select-none z-10">
+          <Image
+            src="/images/logo.png"
+            alt="Logo MatchPrácticas"
+            width={24}
+            height={24}
+            priority
+          />
         </div>
 
+        {/* Título centrado absoluto */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-bold text-lg select-none pointer-events-none">
+          TinkDUAL
+        </div>
+
+        {/* Botón Logout a la derecha */}
         <button
-          className="md:hidden text-[#CCDB42] focus:outline-none"
-          onClick={() => setOpen(!open)}
-          aria-label="Abrir menú"
+          onClick={handleLogout}
+          className="flex items-center gap-2 bg-[#CCDB42] text-[#24396C] px-3 py-1 rounded font-semibold hover:bg-[#b4c731] transition z-10"
+          aria-label="Cerrar sesión"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            {open ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            )}
-          </svg>
+          <LogOut className="w-5 h-5" />
         </button>
       </div>
-
-      <nav
-        className={`md:flex md:items-center md:justify-center md:gap-8 text-sm px-4 pb-3 md:pb-0 ${
-          open ? "block" : "hidden"
-        } md:block`}
-      >
-        <Link href="/" className="block py-2 hover:underline">
-          Inicio
-        </Link>
-        <Link href="/alumno" className="block py-2 hover:underline">
-          Alumno
-        </Link>
-        <Link href="/empresa" className="block py-2 hover:underline">
-          Empresa
-        </Link>
-        <Link href="/admin" className="block py-2 hover:underline">
-          Admin
-        </Link>
-      </nav>
     </header>
   );
 }
