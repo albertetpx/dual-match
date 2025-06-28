@@ -62,7 +62,7 @@ export default function OfertaCard({
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       className={clsx(
-        "w-full max-w-md h-full p-6 bg-[#2F4A8A] border border-[#CCDB42] rounded-lg shadow-lg flex flex-col gap-4 select-none mx-auto transition-all duration-300 ease-in-out overflow-auto",
+        "w-full max-w-md p-6 bg-[#2F4A8A] border border-[#CCDB42] rounded-lg shadow-lg flex flex-col gap-4 select-none mx-auto transition-all duration-300 ease-in-out overflow-auto",
         {
           "animate-swipe-left": animation === "left",
           "animate-swipe-right": animation === "right",
