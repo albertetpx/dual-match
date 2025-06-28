@@ -1,6 +1,6 @@
-// /components/OfertaCard.tsx
 "use client";
-import React from "react";
+import React, { useRef, useState } from "react";
+import clsx from "clsx";
 
 interface Oferta {
   id: number;
@@ -27,8 +27,9 @@ export default function OfertaCard({
   onSwipeLeft,
   onSwipeRight,
 }: OfertaCardProps) {
-  const touchStartX = React.useRef<number | null>(null);
-  const touchEndX = React.useRef<number | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+  const [animation, setAnimation] = useState<"left" | "right" | null>(null);
 
   function handleTouchStart(e: React.TouchEvent) {
     touchStartX.current = e.changedTouches[0].screenX;
@@ -39,9 +40,17 @@ export default function OfertaCard({
     if (touchStartX.current !== null && touchEndX.current !== null) {
       const diff = touchEndX.current - touchStartX.current;
       if (diff > 50) {
-        onSwipeRight();
+        setAnimation("right");
+        setTimeout(() => {
+          onSwipeRight();
+          setAnimation(null);
+        }, 300);
       } else if (diff < -50) {
-        onSwipeLeft();
+        setAnimation("left");
+        setTimeout(() => {
+          onSwipeLeft();
+          setAnimation(null);
+        }, 300);
       }
     }
     touchStartX.current = null;
@@ -52,8 +61,16 @@ export default function OfertaCard({
     <article
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      className="w-full max-w-md p-6 bg-[#2F4A8A] border border-[#CCDB42] rounded-lg shadow-lg flex flex-col gap-4 select-none mx-auto"
+      className={clsx(
+        "w-full max-w-md p-6 bg-[#2F4A8A] border border-[#CCDB42] rounded-lg shadow-lg flex flex-col gap-4 select-none mx-auto transition-all duration-300 ease-in-out",
+        {
+          "animate-swipe-left": animation === "left",
+          "animate-swipe-right": animation === "right",
+          "animate-fade-in-up": animation === null,
+        }
+      )}
     >
+      {/* Contenido igual que antes */}
       <div>
         <h3 className="text-3xl font-extrabold text-[#CCDB42] mb-1">
           {oferta.empresa}
