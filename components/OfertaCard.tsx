@@ -5,7 +5,7 @@ import React from "react";
 interface Oferta {
   id: number;
   empresa: string;
-  tipoPracticas: "remuneradas" | "no remuneradas";
+  tipoPracticas: string;
   incorporacion: string;
   tareas: string;
   requisitos: string;
